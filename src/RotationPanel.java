@@ -8,13 +8,14 @@ import java.awt.RenderingHints;
 // extends — успадкування класу; final, якщо вказано, забороняє подальше успадкування.
 public final class RotationPanel extends JPanel {
     private double time = 0;
-    private long previous = System.nanoTime();
+    private long previous = System.nanoTime(); // Монотонний годинник для вимірювання інтервалів.
     // private — поле закрите ззовні; final забороняє переприсвоєння, але не зміну вмісту об’єкта.
     private final Timer timer;
-    public RotationPanel() {
+    public RotationPanel() { // Ініціалізуємо панель і механізм оновлення.
         setBackground(Color.WHITE);
         // Swing Timer викликає обробник на EDT; затримка задається в мілісекундах.
-        timer = new Timer(16, event -> {
+        // new Клас(...) створює об’єкт і викликає його конструктор.
+        timer = new Timer(16, event -> { // Приблизно 60 оновлень на секунду без окремого робочого потоку.
             long now = System.nanoTime();
             time += (now - previous) / 1_000_000_000.0;
             previous = now;
@@ -22,9 +23,9 @@ public final class RotationPanel extends JPanel {
         });
         timer.start();
     }
-    public void stop() { timer.stop(); }
+    public void stop() { timer.stop(); } // Зупиняємо таймер, коли вікно закривається.
     // @Override — компілятор перевіряє, що метод перевизначає успадкований або реалізує інтерфейс.
-    @Override protected void paintComponent(Graphics graphics) {
+    @Override protected void paintComponent(Graphics graphics) { // Swing викликає метод на EDT, коли панель треба оновити.
         super.paintComponent(graphics);
         // (Graphics2D) уточнює тип копії графічного контексту; копію потім звільняє dispose().
         Graphics2D g = (Graphics2D) graphics.create();
